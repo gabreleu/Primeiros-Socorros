@@ -42,9 +42,9 @@ function scene:create(event)
 ---------
 
     --Botão para ligar e desligar o som
-    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 50, 50)
-    button.x = 708
-    button.y = 50
+    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70)
+    button.x = 670
+    button.y = 65
 
     --Variável para controlar o estado do som
     local somLigado = true  --Começa com som ligado

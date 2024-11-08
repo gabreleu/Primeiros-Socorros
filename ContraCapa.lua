@@ -13,9 +13,23 @@ function scene:create(event)
     imgContraCapa.x = display.contentCenterX
     imgContraCapa.y = display.contentCenterY
 
+
+    --Botão para voltar para a Capa
+    local btnVoltar = display.newImageRect(sceneGroup, "assets/images/btnVoltar.png", 141, 50)
+    btnVoltar.x = 100
+    btnVoltar.y = 963
+
+    function btnVoltar.handle(event)
+        composer.gotoScene("Page08", {effect = "fromLeft", time = 1000})
+    end
+
+    btnVoltar:addEventListener('tap', btnVoltar.handle)
+
+---------
+
     --Botão para voltar para a Capa
     local btnInicio = display.newImageRect(sceneGroup, "assets/images/btnInicio.png", 141, 50)
-    btnInicio.x = 100
+    btnInicio.x = 662
     btnInicio.y = 963
 
     function btnInicio.handle(event)
@@ -25,9 +39,9 @@ function scene:create(event)
     btnInicio:addEventListener('tap', btnInicio.handle)
 
     --Botão para ligar e desligar o som
-    local soundButton = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 50, 50)
-    soundButton.x = 708
-    soundButton.y = 50
+    local soundButton = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70)
+    soundButton.x = 670
+    soundButton.y = 65
 
     --Variável para controlar o estado do som
     local somLigado = true  --Começa com som ligado
