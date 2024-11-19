@@ -14,13 +14,13 @@ function scene:create(event)
     imgContraCapa.y = display.contentCenterY
 
 
-    --Botão para voltar para a Capa
+    --Botão para voltar para a Page06
     local btnVoltar = display.newImageRect(sceneGroup, "assets/images/btnVoltar.png", 141, 50)
     btnVoltar.x = 100
     btnVoltar.y = 963
 
     function btnVoltar.handle(event)
-        composer.gotoScene("Page08", {effect = "fromLeft", time = 1000})
+        composer.gotoScene("Page06", {effect = "fromLeft", time = 1000})
     end
 
     btnVoltar:addEventListener('tap', btnVoltar.handle)
@@ -39,12 +39,18 @@ function scene:create(event)
     btnInicio:addEventListener('tap', btnInicio.handle)
 
     --Botão para ligar e desligar o som
-    local soundButton = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70)
+    local soundButton = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70) --Começa com som desligado
     soundButton.x = 670
     soundButton.y = 65
 
     --Variável para controlar o estado do som
-    local somLigado = true  --Começa com som ligado
+    local somLigado = false  --Começa com som desligado
+
+    --Carrega o som da contra capa
+    local somCapa = audio.loadSound("assets/sounds/contracapa.mp3")
+
+    --Toca o som inicialmente (não toca até o usuário clicar no botão)
+    local somChannel
 
     --Função para ligar e desligar o som
     local function toggleSound()
@@ -53,9 +59,13 @@ function scene:create(event)
             somLigado = false
             soundButton.fill = { type="image", filename="assets/images/btnSoundOff.png" }  --Muda a imagem para som desligado
         else
+            if somChannel then
+                audio.pause(somChannel)
+            end
             --Liga o som
             somLigado = true
             soundButton.fill = { type="image", filename="assets/images/btnSoundOn.png" }  --Muda a imagem para som ligado
+            somChannel = audio.play(somCapa, { loops = -1 })  -- Toca em loop
         end
     end
     soundButton:addEventListener("tap", toggleSound)

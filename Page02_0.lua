@@ -7,58 +7,61 @@ function scene:create(event)
     local sceneGroup = self.view
     -- Code here runs when the scene is first created but has not yet appeared on screen
 
-    --Carrega a imagem da Page08
-    local imgCapa = display.newImageRect(sceneGroup, "assets/images/Page08.png", display.contentWidth, display.contentHeight)
+    -- Carrega a imagem da Page02_1
+    local imgCapa = display.newImageRect(sceneGroup, "assets/images/Page02_0.png", display.contentWidth, display.contentHeight)
     imgCapa.x = display.contentCenterX
     imgCapa.y = display.contentCenterY
 
--------
-
-    --Botão para voltar para a Page07
+    -- Botão para voltar para a Capa
     local btnVoltar = display.newImageRect(sceneGroup, "assets/images/btnVoltar.png", 141, 50)
     btnVoltar.x = 100
     btnVoltar.y = 963
 
     function btnVoltar.handle(event)
-        composer.gotoScene("Page07", {effect = "fromLeft", time = 1000})
+        composer.gotoScene("Capa", {effect = "fromLeft", time = 1000})
     end
 
     btnVoltar:addEventListener('tap', btnVoltar.handle)
 
-------- 
-
-
-    --Botão para ir para a ContraCapa
+    -- Botão para ir para a Page02_1
     local btnAvancar = display.newImageRect(sceneGroup, "assets/images/btnAvancar.png", 141, 50)
     btnAvancar.x = 662
     btnAvancar.y = 963
 
     function btnAvancar.handle(event)
-        composer.gotoScene("ContraCapa", {effect = "fromRight", time = 1000})
+        composer.gotoScene("Page02_1", {effect = "fromRight", time = 1000})
     end
 
     btnAvancar:addEventListener('tap', btnAvancar.handle)
 
----------
-
-    --Botão para ligar e desligar o som
-    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70)
+    -- Botão para ligar e desligar o som
+    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOff.png", 136, 70)  -- Começa com som desligado
     button.x = 670
     button.y = 65
 
-    --Variável para controlar o estado do som
-    local somLigado = true  --Começa com som ligado
+    -- Variável para controlar o estado do som
+    local somLigado = false  -- Começa com som desligado
 
-    --Função para ligar e desligar o som
+    -- Carrega o som da página 02
+    local somCapa = audio.loadSound("assets/sounds/page02_0.mp3")
+
+    -- Variável para controlar o canal de som
+    local somChannel
+
+    -- Função para ligar e desligar o som
     local function toggleSound()
         if somLigado then
-            --Desliga o som
+            -- Desliga o som
             somLigado = false
-            button.fill = { type="image", filename="assets/images/btnSoundOff.png" }  --Muda a imagem para som desligado
+            button.fill = { type="image", filename="assets/images/btnSoundOff.png" }  -- Muda a imagem para som desligado
+            if somChannel then
+                audio.pause(somChannel)
+            end
         else
-            --Liga o som
+            -- Liga o som
             somLigado = true
-            button.fill = { type="image", filename="assets/images/btnSoundOn.png" }  --Muda a imagem para som ligado
+            button.fill = { type="image", filename="assets/images/btnSoundOn.png" }  -- Muda a imagem para som ligado
+            somChannel = audio.play(somCapa, { loops = -1 })  -- Toca em loop
         end
     end
     button:addEventListener("tap", toggleSound)
@@ -85,7 +88,6 @@ function scene:hide(event)
     if (phase == "will") then
 
     elseif (phase == "did") then
-
     end
 end
 
@@ -95,6 +97,7 @@ function scene:destroy(event)
     
     sceneGroup:removeSelf()
     sceneGroup = nil
+
 end
 
 -- -----------------------------------------------------------------------------------

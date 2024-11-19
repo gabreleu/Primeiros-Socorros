@@ -5,30 +5,116 @@ local scene = composer.newScene()
 -- create()
 function scene:create(event)
     local sceneGroup = self.view
-    -- Code here runs when the scene is first created but has not yet appeared on screen
 
-    --Carrega a imagem da Page03
+    -- Carrega a imagem da Page03
     local imgCapa = display.newImageRect(sceneGroup, "assets/images/Page03.png", display.contentWidth, display.contentHeight)
     imgCapa.x = display.contentCenterX
     imgCapa.y = display.contentCenterY
 
--------
+    -- Adiciona a imagem "injury.png" na cena
+    local imgInjury = display.newImageRect(sceneGroup, "assets/images/injury.png", 240, 240)
+    imgInjury.x = 200
+    imgInjury.y = 750
 
-    --Botão para voltar para a Page02
+    -- Adiciona a imagem "sabao.png" na cena
+    local imgSabao = display.newImageRect(sceneGroup, "assets/images/sabao.png", 106, 106)
+    imgSabao.x = 525
+    imgSabao.y = 680
+
+    -- Adiciona a imagem "curativo.png" na cena
+    local imgCurativo = display.newImageRect(sceneGroup, "assets/images/curativo.png", 106, 106)
+    imgCurativo.x = 534
+    imgCurativo.y = 802
+
+    -- Variáveis para verificar se ambos os itens foram usados
+    local sabaoUsado = false
+    local curativoUsado = false
+
+    -- Função para verificar se ambos os itens foram usados
+    local function checkHealing()
+        if sabaoUsado and curativoUsado then
+            imgInjury.fill = { type = "image", filename = "assets/images/curado.png" }
+            imgInjury.x = 380  -- Define a nova posição x
+            imgInjury.y = 780  -- Define a nova posição y
+        end
+    end
+
+    -- Função para arrastar o sabão
+    local function dragSabao(event)
+        if (event.phase == "began") then
+            display.currentStage:setFocus(event.target)
+            event.target.isFocus = true
+            event.target.startMoveX = event.target.x
+            event.target.startMoveY = event.target.y
+        elseif (event.phase == "moved") then
+            if event.target.isFocus then
+                event.target.x = event.x
+                event.target.y = event.y
+            end
+        elseif (event.phase == "ended" or event.phase == "cancelled") then
+            if event.target.isFocus then
+                display.currentStage:setFocus(nil)
+                event.target.isFocus = false
+                -- Verifica se o sabão está em cima da "injury.png"
+                if (math.abs(event.target.x - imgInjury.x) < 50 and math.abs(event.target.y - imgInjury.y) < 50) then
+                    event.target:removeSelf()
+                    sabaoUsado = true
+                    checkHealing()  -- Verifica se ambos os itens foram usados
+                else
+                    event.target.x = event.target.startMoveX
+                    event.target.y = event.target.startMoveY
+                end
+            end
+        end
+        return true
+    end
+
+    -- Função para arrastar o curativo
+    local function dragCurativo(event)
+        if (event.phase == "began") then
+            display.currentStage:setFocus(event.target)
+            event.target.isFocus = true
+            event.target.startMoveX = event.target.x
+            event.target.startMoveY = event.target.y
+        elseif (event.phase == "moved") then
+            if event.target.isFocus then
+                event.target.x = event.x
+                event.target.y = event.y
+            end
+        elseif (event.phase == "ended" or event.phase == "cancelled") then
+            if event.target.isFocus then
+                display.currentStage:setFocus(nil)
+                event.target.isFocus = false
+                -- Verifica se o curativo está em cima da "injury.png"
+                if (math.abs(event.target.x - imgInjury.x) < 50 and math.abs(event.target.y - imgInjury.y) < 50) then
+                    event.target:removeSelf()
+                    curativoUsado = true
+                    checkHealing()  -- Verifica se ambos os itens foram usados
+                else
+                    event.target.x = event.target.startMoveX
+                    event.target.y = event.target.startMoveY
+                end
+            end
+        end
+        return true
+    end
+
+    -- Adiciona listeners de toque para arrastar as imagens
+    imgSabao:addEventListener("touch", dragSabao)
+    imgCurativo:addEventListener("touch", dragCurativo)
+
+    -- Botão para voltar para a Page02_2
     local btnVoltar = display.newImageRect(sceneGroup, "assets/images/btnVoltar.png", 141, 50)
     btnVoltar.x = 100
     btnVoltar.y = 963
 
     function btnVoltar.handle(event)
-        composer.gotoScene("Page02", {effect = "fromLeft", time = 1000})
+        composer.gotoScene("Page02_2", {effect = "fromLeft", time = 1000})
     end
 
     btnVoltar:addEventListener('tap', btnVoltar.handle)
 
-------- 
-
-
-    --Botão para ir para a Page04
+    -- Botão para ir para a Page04
     local btnAvancar = display.newImageRect(sceneGroup, "assets/images/btnAvancar.png", 141, 50)
     btnAvancar.x = 662
     btnAvancar.y = 963
@@ -39,30 +125,38 @@ function scene:create(event)
 
     btnAvancar:addEventListener('tap', btnAvancar.handle)
 
----------
-
-    --Botão para ligar e desligar o som
-    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOn.png", 136, 70)
+    -- Botão para ligar e desligar o som
+    local button = display.newImageRect(sceneGroup, "assets/images/btnSoundOff.png", 136, 70)  -- Alterado para btnSoundOff inicialmente
     button.x = 670
     button.y = 65
 
-    --Variável para controlar o estado do som
-    local somLigado = true  --Começa com som ligado
+    -- Variável para controlar o estado do som
+    local somLigado = false  -- Começa com som desligado
 
-    --Função para ligar e desligar o som
+    -- Carrega o som da Page05
+    local somPage05 = audio.loadSound("assets/sounds/page03.mp3")
+
+    -- Variável para controlar o canal de som
+    local somChannel
+
+    -- Função para ligar e desligar o som
     local function toggleSound()
         if somLigado then
-            --Desliga o som
+            -- Desliga o som
             somLigado = false
-            button.fill = { type="image", filename="assets/images/btnSoundOff.png" }  --Muda a imagem para som desligado
+            button.fill = { type = "image", filename = "assets/images/btnSoundOff.png" }
+            if somChannel then
+                audio.pause(somChannel)
+            end
         else
-            --Liga o som
+            -- Liga o som
             somLigado = true
-            button.fill = { type="image", filename="assets/images/btnSoundOn.png" }  --Muda a imagem para som ligado
+            button.fill = { type = "image", filename = "assets/images/btnSoundOn.png" }
+            somChannel = audio.play(somPage05, { loops = -1 })  -- Toca em loop
         end
     end
-    button:addEventListener("tap", toggleSound)
 
+    button:addEventListener("tap", toggleSound)
 end
 
 -- show()
@@ -71,9 +165,7 @@ function scene:show(event)
     local phase = event.phase
 
     if (phase == "will") then
-
     elseif (phase == "did") then
-
     end
 end
 
@@ -83,16 +175,14 @@ function scene:hide(event)
     local phase = event.phase
 
     if (phase == "will") then
-
     elseif (phase == "did") then
-
     end
 end
 
 -- destroy()
 function scene:destroy(event)
     local sceneGroup = self.view
-    
+
     sceneGroup:removeSelf()
     sceneGroup = nil
 end
