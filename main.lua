@@ -6,6 +6,8 @@
 
 -- Your code here
 
+system.activate("multitouch")
+
 local composer = require("composer")
 
-composer.gotoScene("Page05")
+composer.gotoScene("Capa")
